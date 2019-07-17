@@ -3,6 +3,8 @@ import { User } from 'src/app/models/User';
 import { ActivatedRoute } from '@angular/router';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { NgForm } from '@angular/forms';
+import { UserService } from 'src/app/services/user.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-member-edit',
@@ -12,7 +14,7 @@ import { NgForm } from '@angular/forms';
 export class MemberEditComponent implements OnInit {
   user: User;
 
-  @ViewChild('editForm', {static: false}) editForm: NgForm;
+  @ViewChild('editForm', { static: false }) editForm: NgForm;
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification($event: any) {
     if (this.editForm.dirty) {
@@ -21,7 +23,9 @@ export class MemberEditComponent implements OnInit {
   }
 
   constructor(private route: ActivatedRoute,
-              private alertify: AlertifyService) { }
+              private alertify: AlertifyService,
+              private userService: UserService,
+              private authService: AuthService) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -30,9 +34,12 @@ export class MemberEditComponent implements OnInit {
   }
 
   updateUser() {
-    console.log(this.user);
-    this.alertify.success('Profile updated successfully!');
-    this.editForm.reset(this.user);
+    this.userService.updateUser(this.authService.decodeToken.nameid, this.user).subscribe(next => {
+      this.alertify.success('Profile updated successfully!');
+      this.editForm.reset(this.user);
+    }, error => {
+      this.alertify.error(error);
+    });
   }
 
 }
