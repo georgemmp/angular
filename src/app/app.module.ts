@@ -13,7 +13,7 @@ import { NavComponent } from './nav/nav.component';
 import { AuthService } from './services/auth.service';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
-import { ErrorInterceptor } from './services/error.interception';
+import { ErrorInterceptorProvider } from './services/error.interception';
 import { AlertifyService } from './services/alertify.service';
 import { MemberListComponent } from './members/member-list/member-list.component';
 import { ListComponent } from './list/list.component';
@@ -67,7 +67,7 @@ export function tokenGetter() {
    ],
    providers: [
       AuthService,
-      ErrorInterceptor,
+      ErrorInterceptorProvider,
       AlertifyService,
       AuthGuard,
       UserService,
