@@ -18,6 +18,7 @@ export class PhotosEditorComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
   ngOnInit() {
+    this.initializeUploader();
   }
 
   fileOverBase(e: any): void {
@@ -26,7 +27,7 @@ export class PhotosEditorComponent implements OnInit {
 
   initializeUploader() {
     this.uploader = new FileUploader({
-      url: this.baseUrl + '/users' + this.authService.decodeToken.nameid + '/photos',
+      url: this.baseUrl + 'users/' + this.authService.decodeToken.nameid + '/photos',
       authToken: 'Bearer ' + localStorage.getItem('token'),
       isHTML5: true,
       allowedFileType: ['image'],
@@ -34,5 +35,21 @@ export class PhotosEditorComponent implements OnInit {
       autoUpload: false,
       maxFileSize: 10 * 1024 * 1024
     });
+
+    this.uploader.onAfterAddingFile = (file) => { file.withCredentials = false; };
+
+    this.uploader.onSuccessItem = (item, response, status, headers) => {
+      if (response) {
+        const res: Photo = JSON.parse(response);
+        const photo = {
+          id: res.id,
+          url: res.url,
+          dateAdded: res.dateAdded,
+          description: res.description,
+          isMaim: res.isMaim
+        };
+        this.photos.push(photo);
+      }
+    }
   }
 }
